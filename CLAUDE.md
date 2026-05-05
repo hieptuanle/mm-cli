@@ -45,3 +45,9 @@ src/
 - JSON is the default output. `--human` switches to markdown.
 - Auth precedence: env (`MATTERMOST_URL`, `MATTERMOST_TOKEN`, `MATTERMOST_TEAM`) > config file.
 - Use `node:`-prefixed builtin imports.
+
+## Language
+
+This repo uses **English** for everything: commit messages, README, code
+comments, PR descriptions. This overrides the global rule in
+`~/.claude/CLAUDE.md` that requests Vietnamese commit messages.
