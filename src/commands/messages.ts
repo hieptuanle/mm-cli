@@ -8,6 +8,7 @@ import {
     formatPostsHuman,
     formatPostsMd,
     isoTs,
+    truncateMessage,
 } from '../lib/formatters.js'
 import { fetchPostSilent, resolveAuthors, resolveChannel as resolveChannelArg } from '../lib/helpers.js'
 import { addOutputFlags, getOutputOptions, type OutputOptions, outputList } from '../lib/output.js'
@@ -221,14 +222,14 @@ async function emitThreadIndex(
         const summary: ThreadSummary = {
             thread_id: tid,
             root_author: authors[root.user_id ?? ''] ?? 'unknown',
-            root_message: (root.message ?? '').slice(0, 200),
+            root_message: truncateMessage(root.message ?? '', 200),
             root_created_at: isoTs(root.create_at),
             reply_count: replyCount,
             channel: chInfo.display_name,
         }
         if (lastReply) {
             summary.last_reply_author = authors[lastReply.user_id ?? ''] ?? 'unknown'
-            summary.last_reply_message = (lastReply.message ?? '').slice(0, 200)
+            summary.last_reply_message = truncateMessage(lastReply.message ?? '', 200)
             summary.last_reply_at = isoTs(lastReply.create_at)
         }
         summaries.push(summary)
@@ -251,10 +252,10 @@ async function emitThreadIndex(
                 lines.push(
                     `${chalk.bold.cyan(t.root_author)} ${chalk.dim('(' + t.root_created_at + ')')} ${chalk.yellow(`[${t.reply_count} replies]`)}`,
                 )
-                lines.push(`  ${t.root_message.slice(0, 80)}`)
+                lines.push(`  ${truncateMessage(t.root_message, 80)}`)
                 if (t.last_reply_author) {
                     lines.push(
-                        `  ${chalk.dim('> last:')} ${chalk.cyan(t.last_reply_author)} ${chalk.dim('(' + t.last_reply_at + ')')}: ${(t.last_reply_message ?? '').slice(0, 60)}`,
+                        `  ${chalk.dim('> last:')} ${chalk.cyan(t.last_reply_author)} ${chalk.dim('(' + t.last_reply_at + ')')}: ${truncateMessage(t.last_reply_message ?? '', 60)}`,
                     )
                 }
                 lines.push(`  ${chalk.dim('thread_id: ' + t.thread_id)}`)
@@ -268,10 +269,10 @@ async function emitThreadIndex(
             const lines = [`## #${chInfo.display_name} - ${items.length} active threads`, '']
             for (const t of items) {
                 lines.push(`**${t.root_author}** (${t.root_created_at}) [${t.reply_count} replies]`)
-                lines.push(`  ${t.root_message.slice(0, 80)}`)
+                lines.push(`  ${truncateMessage(t.root_message, 80)}`)
                 if (t.last_reply_author) {
                     lines.push(
-                        `  > last: ${t.last_reply_author} (${t.last_reply_at}): ${(t.last_reply_message ?? '').slice(0, 60)}`,
+                        `  > last: ${t.last_reply_author} (${t.last_reply_at}): ${truncateMessage(t.last_reply_message ?? '', 60)}`,
                     )
                 }
                 lines.push(`  thread_id: ${t.thread_id}`)

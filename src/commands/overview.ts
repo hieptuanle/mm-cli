@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { Command } from 'commander'
 import { getContext } from '../lib/auth.js'
 import { EXIT_ERROR } from '../lib/client.js'
-import { channelRef, isoTs, TYPE_LABELS } from '../lib/formatters.js'
+import { channelRef, isoTs, truncateMessage, TYPE_LABELS } from '../lib/formatters.js'
 import {
     computeUnreads,
     fetchRootContext,
@@ -91,7 +91,7 @@ export function registerOverviewCommand(program: Command): void {
             const rootId = p.root_id ?? ''
             const entry: MentionEntry = {
                 author: authors[p.user_id ?? ''] ?? 'unknown',
-                message: (p.message ?? '').slice(0, 200),
+                message: truncateMessage(p.message ?? '', 200),
                 created_at: isoTs(p.create_at),
                 channel: ch.display_name,
                 thread_id: rootId || p.id,
@@ -165,9 +165,9 @@ function renderOverviewHuman(d: OverviewData): string {
                 `  ${chalk.bold.cyan(m.author)}${bot} in ${chalk.magenta('#' + m.channel)} ${chalk.dim('(' + m.created_at + ')')}`,
             )
             if (m.root_message) {
-                lines.push(`    ${chalk.dim('re: ' + m.root_author + ': ' + m.root_message.slice(0, 80))}`)
+                lines.push(`    ${chalk.dim('re: ' + m.root_author + ': ' + truncateMessage(m.root_message, 80))}`)
             }
-            lines.push(`    ${m.message.slice(0, 80)}`)
+            lines.push(`    ${truncateMessage(m.message, 80)}`)
         }
     } else {
         lines.push(chalk.dim('  No mentions.'))
@@ -205,9 +205,9 @@ function renderOverviewRaw(d: OverviewData): string {
             const bot = m.is_bot ? ' [bot]' : ''
             lines.push(`**${m.author}**${bot} in #${m.channel} (${m.created_at})`)
             if (m.root_message) {
-                lines.push(`  re: ${m.root_author}: ${m.root_message.slice(0, 80)}`)
+                lines.push(`  re: ${m.root_author}: ${truncateMessage(m.root_message, 80)}`)
             }
-            lines.push(`  ${m.message.slice(0, 80)}`)
+            lines.push(`  ${truncateMessage(m.message, 80)}`)
             lines.push('')
         }
     } else {

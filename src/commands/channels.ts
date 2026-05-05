@@ -74,13 +74,24 @@ const CHANNEL_INFO_ESSENTIAL: (keyof ChannelInfoOut)[] = [
     'last_post_at',
 ]
 
-const UNREAD_ESSENTIAL: (keyof UnreadEntry)[] = [
+interface UnreadDto {
+    channel_id: string
+    channel: string
+    ref: string
+    type: string
+    unread: number
+    mentions: number
+    team: string
+    last_post_at: string
+}
+
+const UNREAD_ESSENTIAL: (keyof UnreadDto)[] = [
     'channel',
-    'display_name',
+    'ref',
     'type',
     'unread',
     'mentions',
-    'team_name',
+    'team',
     'last_post_at',
 ]
 
@@ -275,12 +286,23 @@ export function registerChannelsCommand(program: Command): void {
                 return true
             })
 
-            outputList<UnreadEntry>(
-                deduped,
-                formatUnreadHuman,
+            const dto: UnreadDto[] = deduped.map((u) => ({
+                channel_id: u.channel_id,
+                channel: u.display_name,
+                ref: channelRef(u),
+                type: TYPE_LABELS[u.type] ?? u.type,
+                unread: u.unread,
+                mentions: u.mentions,
+                team: u.team_name,
+                last_post_at: isoTs(u.last_post_at),
+            }))
+
+            outputList<UnreadDto>(
+                dto,
+                () => formatUnreadHuman(deduped),
                 UNREAD_ESSENTIAL,
                 outputOpts,
-                formatUnreadMd,
+                () => formatUnreadMd(deduped),
             )
         },
     )

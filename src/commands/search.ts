@@ -7,6 +7,7 @@ import {
     enrichPosts,
     formatPostHuman,
     formatPostMd,
+    truncateMessage,
 } from '../lib/formatters.js'
 import { fetchRootContext, resolveAuthors, searchMentions } from '../lib/helpers.js'
 import { addOutputFlags, getOutputOptions, outputList } from '../lib/output.js'
@@ -93,7 +94,7 @@ export function registerSearchCommand(program: Command): void {
                         if (!post) continue
                         if (e.root) {
                             lines.push(
-                                chalk.dim(`re: ${e.root.author}: ${e.root.message.slice(0, 80)}`),
+                                chalk.dim(`re: ${e.root.author}: ${truncateMessage(e.root.message, 80)}`),
                             )
                         }
                         lines.push(formatPostHuman(post, author, channelByPost[e.id] ?? ''))
@@ -108,7 +109,7 @@ export function registerSearchCommand(program: Command): void {
                     for (const p of posts) {
                         const author = authors[p.user_id ?? ''] ?? 'unknown'
                         const rc = rootContext[p.root_id ?? '']
-                        if (rc) lines.push(`*re: ${rc.author}: ${rc.message.slice(0, 80)}*`)
+                        if (rc) lines.push(`*re: ${rc.author}: ${truncateMessage(rc.message, 80)}*`)
                         lines.push(formatPostMd(p, author, channelByPost[p.id] ?? ''))
                         lines.push('')
                     }

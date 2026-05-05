@@ -8,6 +8,19 @@ export const TYPE_LABELS: Record<string, string> = {
     G: 'Group DM',
 }
 
+/**
+ * Truncate a message preview to `max` characters, but avoid leaving a
+ * dangling markdown link like `[text](https` with no closing paren.
+ */
+export function truncateMessage(s: string, max: number): string {
+    if (!s) return s
+    if (s.length <= max) return s
+    let cut = s.slice(0, max)
+    // strip any unclosed trailing markdown link
+    cut = cut.replace(/\[[^\]]*\]\([^)]*$/, '').replace(/\s+$/, '')
+    return `${cut}…`
+}
+
 export function isoTs(epochMs: number | undefined): string {
     if (!epochMs) return ''
     return new Date(epochMs).toISOString().replace(/\.\d{3}Z$/, 'Z')
