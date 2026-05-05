@@ -52,7 +52,15 @@ mm user @alice
 
 ## Output
 
-JSON by default. Add `--human` for markdown.
+Colored human-readable output by default. Each command supports:
+
+| Flag             | What it does                                  |
+| ---------------- | --------------------------------------------- |
+| _(default)_      | Colored TTY output for humans                 |
+| `--json`         | Pretty JSON with essential fields             |
+| `--json --full`  | Pretty JSON with all fields                   |
+| `--ndjson`       | One JSON object per line (for piping)         |
+| `--raw`          | Raw markdown / plaintext without ANSI colors  |
 
 Key fields:
 
@@ -65,7 +73,6 @@ Key fields:
 ## Global options
 
 ```
---human      Human-readable markdown output (default is JSON)
 --team       Filter to a specific team
 --debug      Enable debug output
 ```

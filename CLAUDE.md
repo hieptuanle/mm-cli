@@ -41,8 +41,10 @@ src/
 
 ## Conventions
 
-- All commands accept the global flags `--human`, `--team`, `--debug` (read via `getState(cmd)`).
-- JSON is the default output. `--human` switches to markdown.
+- Global flags: `--team`, `--debug` (read via `getState(cmd)`).
+- Per-command output flags (mirror outline-cli): `--json`, `--json --full`, `--ndjson`, `--raw`. Default = colored TTY output.
+- Wire output via `addOutputFlags(cmd)` and route results through `outputItem` / `outputList` from `lib/output.ts`. Each call defines `essentialKeys` and an optional raw-markdown formatter.
+- `getOutputOptions(opts)` sets `chalk.level = 0` automatically when `--raw`, `--json`, or `--ndjson` is active.
 - Auth precedence: env (`MATTERMOST_URL`, `MATTERMOST_TOKEN`, `MATTERMOST_TEAM`) > config file.
 - Use `node:`-prefixed builtin imports.
 

@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import type { Channel, Post } from './client.js'
 
 export const TYPE_LABELS: Record<string, string> = {
@@ -293,4 +294,108 @@ export function formatPostsJson(
     channelName?: string,
 ): string {
     return JSON.stringify(enrichPosts(posts, authors, channelName ?? ''), null, 2)
+}
+
+/**
+ * Colored human formatter for a single post.
+ * Uses chalk for emphasis (chalk auto-disables when level=0).
+ */
+export function formatPostHuman(
+    post: Post,
+    author: string,
+    channelName?: string,
+    indent = false,
+): string {
+    const ts = formatTimestamp(post.create_at)
+    const msg = (post.message ?? '').trim()
+    const prefix = indent ? chalk.dim('> ') : ''
+    const isBot = (post.props as Record<string, unknown> | undefined)?.from_webhook === 'true'
+    const authorText = isBot ? `${author} ${chalk.yellow('[bot]')}` : author
+
+    let header = `${prefix}${chalk.bold.cyan(authorText)} ${chalk.dim(`(${ts})`)}`
+    if (channelName) {
+        header = `${prefix}${chalk.bold.cyan(authorText)} in ${chalk.magenta(`#${channelName}`)} ${chalk.dim(`(${ts})`)}`
+    }
+
+    const annotations: string[] = []
+    if (post.reply_count && !post.root_id) annotations.push(`${post.reply_count} replies`)
+
+    const fileIds = post.file_ids ?? []
+    let fileNames: string[] = []
+    if (fileIds.length && post.metadata?.files) {
+        fileNames = post.metadata.files.map((f) => f.name ?? '').filter(Boolean)
+    }
+    if (fileNames.length) annotations.push(`files: ${fileNames.join(', ')}`)
+    else if (fileIds.length) {
+        annotations.push(`${fileIds.length} file${fileIds.length > 1 ? 's' : ''}`)
+    }
+
+    const reactions = post.metadata?.reactions
+    if (reactions?.length) {
+        const counts = new Map<string, number>()
+        for (const r of reactions) {
+            const k = r.emoji_name ?? ''
+            counts.set(k, (counts.get(k) ?? 0) + 1)
+        }
+        const summary = [...counts.entries()].map(([k, v]) => `:${k}: ${v}`).join(' ')
+        annotations.push(summary)
+    }
+
+    const suffix = annotations.length ? ` ${chalk.dim(`[${annotations.join(', ')}]`)}` : ''
+
+    if (!msg) {
+        if (fileNames.length) return header + suffix
+        if (post.type) return `${header} ${chalk.dim(`(${post.type})`)}`
+        return `${header} ${chalk.dim('(no text)')}${suffix}`
+    }
+
+    let body = msg
+    if (indent && body.includes('\n')) body = body.split('\n').join(`\n${chalk.dim('> ')}`)
+    if (indent) body = `${chalk.dim('> ')}${body}`
+
+    return `${header}${suffix}\n${body}`
+}
+
+export function formatPostsHuman(
+    posts: Post[],
+    authors: Record<string, string>,
+    channelName?: string,
+): string {
+    if (!posts.length) return chalk.dim('No messages.')
+    const lines: string[] = []
+    if (channelName) lines.push(chalk.bold.magenta(`#${channelName}`))
+    for (const p of posts) {
+        const author = authors[p.user_id ?? ''] ?? 'unknown'
+        const isReply = Boolean(p.root_id)
+        lines.push(formatPostHuman(p, author, undefined, isReply))
+    }
+    return lines.join('\n\n')
+}
+
+export function formatChannelsHuman(channels: Array<Channel & { team_name?: string }>): string {
+    if (!channels.length) return chalk.dim('No channels found.')
+    const lines: string[] = []
+    for (const ch of channels) {
+        const t = TYPE_LABELS[ch.type] ?? ch.type
+        const name = chalk.bold(ch.display_name)
+        const type = chalk.dim(`(${t})`)
+        const team = ch.team_name ? ` ${chalk.dim(`[${ch.team_name}]`)}` : ''
+        const last = ch.last_post_at ? ` ${chalk.dim(`last: ${isoTs(ch.last_post_at)}`)}` : ''
+        lines.push(`  ${name} ${type}${team}${last}`)
+    }
+    return lines.join('\n')
+}
+
+export function formatUnreadHuman(unreads: UnreadEntry[]): string {
+    if (!unreads.length) return chalk.green('All caught up.')
+    const lines: string[] = []
+    for (const u of unreads) {
+        const name = chalk.bold(u.display_name)
+        const t = chalk.dim(`(${TYPE_LABELS[u.type] ?? u.type})`)
+        const unreadStr = chalk.cyan(`${u.unread} unread`)
+        const mentionStr = u.mentions > 0 ? ` ${chalk.red.bold(`${u.mentions} mentions`)}` : ''
+        const team = u.team_name ? ` ${chalk.dim(`[${u.team_name}]`)}` : ''
+        lines.push(`  ${name} ${t} — ${unreadStr}${mentionStr}${team}`)
+    }
+    return lines.join('\n')
 }

@@ -12,15 +12,20 @@ const program = new Command()
 program
     .name('mm')
     .version('0.1.0')
-    .description('Mattermost CLI for humans and agents. Output is JSON by default.')
-    .option('--human', 'Human-readable markdown output (default is JSON).', false)
+    .description('Mattermost CLI for humans and agents.')
     .option('--team <name>', 'Filter to a specific team.')
     .option('--debug', 'Enable debug output.', false)
     .addHelpText(
         'after',
         `
+All commands support:
+  (default)   Colored human-readable output
+  --json      Pretty JSON with essential fields
+  --json --full  All fields
+  --ndjson    One JSON object per line (for piping)
+  --raw       Raw markdown without ANSI colors
+
 Note for AI/LLM agents:
-  JSON is the default. Use --human for markdown output.
   Each post has thread_id (pass to 'mm thread') and channels expose 'ref' (pass to 'mm messages').`,
     )
 
