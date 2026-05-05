@@ -9,7 +9,12 @@ import {
     formatPostsMd,
     isoTs,
 } from '../lib/formatters.js'
-import { fetchPostSilent, resolveAuthors, resolveChannel as resolveChannelArg } from '../lib/helpers.js'
+import {
+    extractPostId,
+    fetchPostSilent,
+    resolveAuthors,
+    resolveChannel as resolveChannelArg,
+} from '../lib/helpers.js'
 import { addOutputFlags, getOutputOptions, type OutputOptions, outputList } from '../lib/output.js'
 import { Resolver } from '../lib/resolve.js'
 import { getState } from '../lib/state.js'
@@ -51,7 +56,7 @@ export function registerMessagesCommand(program: Command): void {
     addOutputFlags(
         program
             .command('messages <channel>')
-            .description('Read messages from a channel (name, @user, or ID).')
+            .description('Read messages from a channel (name, @user, ID, or channel link).')
             .option('--since <since>', 'Show messages since (1h, 2d, today, 2026-03-05).')
             .option('--limit <n>', 'Max messages (max 200).', '30')
             .option('--threads', 'Group by thread: show root + last reply + reply count.', false),
@@ -112,13 +117,13 @@ export function registerMessagesCommand(program: Command): void {
 
     addOutputFlags(
         program
-            .command('thread <postId>')
-            .description('Read a thread by post ID. Returns root + last 9 replies by default.')
+            .command('thread <postIdOrLink>')
+            .description('Read a thread by post ID or permalink (https://.../pl/<id>).')
             .option('--limit <n>', 'Max messages (root + last N-1 replies). 0 for all.', '10')
             .option('--since <since>', 'Show replies since (1h, 2d, today). Root always included.'),
     ).action(
         async (
-            postId: string,
+            postIdOrLink: string,
             opts: { limit?: string; since?: string } & Record<string, unknown>,
             cmd: Command,
         ) => {
@@ -126,6 +131,7 @@ export function registerMessagesCommand(program: Command): void {
             const outputOpts = getOutputOptions(opts)
             const ctx = await getContext(state)
             const resolver = new Resolver(ctx.client, ctx.userId)
+            const postId = extractPostId(postIdOrLink)
 
             let result
             try {

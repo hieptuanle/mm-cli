@@ -10,7 +10,28 @@ import { Resolver, type UserInfo } from './resolve.js'
 
 const ID_RE = /^[a-z0-9]{26}$/
 
-export async function resolveChannel(ctx: MMContext, channelArg: string): Promise<Channel> {
+/**
+ * Parse a Mattermost post permalink into a bare post ID.
+ * Accepts: `https://<host>/<team>/pl/<id>` or just `<id>`.
+ */
+export function extractPostId(input: string): string {
+    const m = input.match(/\/pl\/([a-z0-9]{26})\b/i)
+    if (m?.[1]) return m[1]
+    return input.trim()
+}
+
+/**
+ * Parse a Mattermost channel link into a channel name.
+ * Accepts: `https://<host>/<team>/channels/<name>` or pass-through.
+ */
+export function extractChannelArg(input: string): string {
+    const m = input.match(/\/channels\/([^/?#]+)/i)
+    if (m?.[1]) return decodeURIComponent(m[1])
+    return input.trim()
+}
+
+export async function resolveChannel(ctx: MMContext, channelArgIn: string): Promise<Channel> {
+    const channelArg = extractChannelArg(channelArgIn)
     if (channelArg.startsWith('@')) {
         const username = channelArg.slice(1)
         try {
