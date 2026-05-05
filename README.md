@@ -77,6 +77,16 @@ Key fields:
 --debug      Enable debug output
 ```
 
+## Agent skill
+
+This repo ships an agent skill at [`skills/mm-cli/`](skills/mm-cli/) so coding agents (Claude Code, Cursor, etc.) know when and how to invoke `mm`. Install via:
+
+```bash
+npx skills add hieptuanle/mm-cli
+```
+
+The skill bundles a `SKILL.md` plus reference docs for setup, commands, workflows, and common scenarios.
+
 ## Develop
 
 ```bash
