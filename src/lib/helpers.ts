@@ -5,7 +5,7 @@ import {
     type MMContext,
     type Post,
 } from './client.js'
-import { isoTs, truncateMessage } from './formatters.js'
+import { isoTs } from './formatters.js'
 import { Resolver, type UserInfo } from './resolve.js'
 
 const ID_RE = /^[a-z0-9]{26}$/
@@ -209,7 +209,7 @@ export async function fetchRootContext(
         }
         out[rid] = {
             author: authors[rootUid] ?? 'unknown',
-            message: truncateMessage(root.message ?? '', 200),
+            message: (root.message ?? '').slice(0, 200),
             created_at: isoTs(root.create_at),
         }
     }
