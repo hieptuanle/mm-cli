@@ -1,13 +1,16 @@
 {
     "name": "mm-cli",
     "version": "0.1.0",
-    "description": "Mattermost CLI for humans and agents",
+    "description": "Mattermost CLI for humans and agents (TypeScript port of mattermost-cli)",
     "type": "module",
     "bin": {
         "mm": "./dist/index.js"
     },
     "files": [
-        "dist"
+        "dist",
+        "skills",
+        "README.md",
+        "LICENSE"
     ],
     "scripts": {
         "build": "tsc",
@@ -15,6 +18,27 @@
         "type-check": "tsc --noEmit",
         "start": "node dist/index.js",
         "prepublishOnly": "pnpm build"
+    },
+    "keywords": [
+        "mattermost",
+        "cli",
+        "chat",
+        "agent",
+        "llm",
+        "messaging"
+    ],
+    "author": "hieptuanle",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hieptuanle/mm-cli.git"
+    },
+    "bugs": {
+        "url": "https://github.com/hieptuanle/mm-cli/issues"
+    },
+    "homepage": "https://github.com/hieptuanle/mm-cli#readme",
+    "publishConfig": {
+        "access": "public"
     },
     "engines": {
         "node": ">=20.18.1"
