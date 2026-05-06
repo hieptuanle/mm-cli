@@ -17,17 +17,16 @@ mm whoami
 
 If that works, skip to "Start here" below.
 
-If `mm` is not on PATH, install it from source (no npm package yet):
+If `mm` is not on PATH, install from npm:
 
 ```bash
-git clone https://github.com/hieptuanle/mm-cli.git
-cd mm-cli
-pnpm install
-pnpm build
-# add to PATH (one of):
-pnpm link --global       # exposes `mm`
-# or run directly:
-node /absolute/path/to/mm-cli/dist/index.js --help
+# Run without installing
+npx @hieptuanle/mm-cli --help
+
+# Or install globally (adds `mm` to PATH)
+npm i -g @hieptuanle/mm-cli
+# or
+pnpm add -g @hieptuanle/mm-cli
 ```
 
 Then authenticate (one-time):

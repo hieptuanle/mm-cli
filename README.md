@@ -5,11 +5,24 @@ Mattermost CLI for humans and agents. TypeScript port of
 
 ## Install
 
+Published on npm as [`@hieptuanle/mm-cli`](https://www.npmjs.com/package/@hieptuanle/mm-cli). Pick whichever fits your environment:
+
 ```bash
-pnpm install
-pnpm build
-node dist/index.js --help
-# or after `npm link` / `pnpm link --global`:
+# Run without installing (no PATH changes)
+npx @hieptuanle/mm-cli --help
+
+# Global install — adds `mm` to your PATH
+npm i -g @hieptuanle/mm-cli
+pnpm add -g @hieptuanle/mm-cli
+
+# Or install per-project
+pnpm add @hieptuanle/mm-cli
+npx mm --help
+```
+
+Once installed, the binary is `mm`:
+
+```bash
 mm --help
 ```
 

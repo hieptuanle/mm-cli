@@ -4,32 +4,32 @@ Getting `mm` working from scratch. This covers installation, authentication, and
 
 ## 1. Install the CLI
 
-This CLI is the TypeScript port of `mattermost-cli` and is distributed via the GitHub repo. It runs on Node.js (>=20.18.1) with pnpm.
+The CLI is published on npm as `@hieptuanle/mm-cli`. Requires Node.js >= 20.18.1.
 
 ```bash
-git clone https://github.com/hieptuanle/mm-cli.git
-cd mm-cli
-pnpm install
-pnpm build
-```
+# Run without installing (good for one-off use)
+npx @hieptuanle/mm-cli --help
 
-The build emits `dist/index.js` with a Node shebang. Make it available as `mm`:
-
-```bash
-# Option A: pnpm global link
-pnpm link --global
-
-# Option B: alias / symlink in ~/bin
-ln -s "$(pwd)/dist/index.js" ~/bin/mm
-
-# Option C: run directly without installing
-alias mm="node $(pwd)/dist/index.js"
+# Install globally (adds `mm` to PATH)
+npm i -g @hieptuanle/mm-cli
+# or
+pnpm add -g @hieptuanle/mm-cli
 ```
 
 Verify:
 
 ```bash
 mm --help
+```
+
+If you want to hack on the CLI itself, clone the repo and run from source:
+
+```bash
+git clone https://github.com/hieptuanle/mm-cli.git
+cd mm-cli
+pnpm install
+pnpm build
+node dist/index.js --help
 ```
 
 ## 2. Find your Mattermost server URL

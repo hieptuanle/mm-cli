@@ -1,5 +1,5 @@
 {
-    "name": "mm-cli",
+    "name": "@hieptuanle/mm-cli",
     "version": "0.1.0",
     "description": "Mattermost CLI for humans and agents (TypeScript port of mattermost-cli)",
     "type": "module",
