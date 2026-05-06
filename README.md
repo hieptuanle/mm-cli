@@ -26,6 +26,21 @@ Once installed, the binary is `mm`:
 mm --help
 ```
 
+### From source
+
+If you want to hack on the CLI:
+
+```bash
+git clone https://github.com/hieptuanle/mm-cli.git
+cd mm-cli
+pnpm install
+pnpm build
+node dist/index.js --help
+
+# Optionally expose `mm` globally:
+pnpm link --global
+```
+
 ## Setup
 
 ```bash
